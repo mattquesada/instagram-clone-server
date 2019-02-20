@@ -9,7 +9,7 @@ const client = new Client({
 const addUser = (request, response) => {
   const { username, email, password} = request.body.user;
   const query = ` INSERT INTO users (username, email, password) 
-                  VALUES ($1, $2)`;
+                  VALUES ($1, $2, $3)`;
   const queryArgs = [username, email, password];
 
   client.connect();
