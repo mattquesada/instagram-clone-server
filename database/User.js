@@ -7,7 +7,7 @@ const client = new Client({
 
 // TODO - add insertID to the query response
 const addUser = (request, response) => {
-  const { username, email, password} = request.body.user;
+  const { username, email, password} = request.body;
   const query = ` INSERT INTO users (username, email, password) 
                   VALUES ($1, $2, $3)`;
   const queryArgs = [username, email, password];
