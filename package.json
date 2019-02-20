@@ -1,0 +1,22 @@
+{
+  "name": "instagram-server",
+  "version": "1.0.0",
+  "description": "Basic server for: https://github.com/mattquesada/react-native-instagram-clone",
+  "main": "index.js",
+  "engines": {
+    "node": "10.15.0",
+    "npm": "6.4.1"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "pg": "^7.8.0"
+  }
+}
