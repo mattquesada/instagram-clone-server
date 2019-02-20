@@ -23,7 +23,7 @@ const addUser = (request, response) => {
 const getUser = (request, response) => {
   const username  = request.body.username;
   const query = ` SELECT U.username 
-                  FROM USERS U 
+                  FROM users U 
                   WHERE U.username = $1`;
   
   client.connect();
