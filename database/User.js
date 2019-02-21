@@ -103,8 +103,8 @@ const getFollowers = (request, response) => {
   const client = utils.initClient();
   const username = request.body.username;
   const query = ` SELECT isFollowedUsername
-                 FROM follows
-                 WHERE followUsername = '${username}'`;
+                  FROM follows
+                  WHERE followUsername = '${username}'`;
 
   client.connect();
   client.query(query, (error, results) => {
