@@ -15,11 +15,11 @@ app.get('/', (request, response) => {
 // endpoints
 app.get('/user', db.getUser);
 app.post('/user', db.addUser);
-app.get('./allUsers', db.getAllUsers);
-app.post('./biography', db.updateBiography);
-app.post('./addFollow', db.addFollow);
-app.post('./removeFollow', db.removeFollow);
-app.get('./followers', db.getFollowers);
+app.get('/allUsers', db.getAllUsers);
+app.post('/biography', db.updateBiography);
+app.post('/addFollow', db.addFollow);
+app.post('/removeFollow', db.removeFollow);
+app.get('/followers', db.getFollowers);
 
 app.listen(port, () => {
   console.log(`Server running at port ${port}`);
