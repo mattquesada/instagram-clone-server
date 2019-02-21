@@ -9,11 +9,10 @@ const client = new Client({
 const addUser = (request, response) => {
   const { username, email, password} = request.body;
   const query = ` INSERT INTO users (username, email, password) 
-                  VALUES ($1, $2, $3)`;
-  const queryArgs = [username, email, password];
+                  VALUES ('${username}', '${email}', '${password}')`;
 
   client.connect();
-  client.query(query, queryArgs, (error, results) => {
+  client.query(query, (error, results) => {
     if (error) throw error;
     response.status(201).send(`User added successfully`); 
     client.end();
