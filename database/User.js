@@ -59,7 +59,7 @@ const updateBiography = (request, response) => {
 const addFollow = (request, response) => {
   const client = utils.initClient();
   const { ownUsername, toFollowUsername } = request.body;
-  const addFollowQuery = `INSERT INTO following_database
+  const addFollowQuery = `INSERT INTO follows
              (followUsername, isFollowedUsername) VALUES
              ('${ownUsername}', '${toFollowUsername}')`;
   const updateFollowerCount = `UPDATE users
@@ -81,7 +81,7 @@ const addFollow = (request, response) => {
 const removeFollow = (request, response) => {
   const client = utils.initClient();
   const { ownUsername, toUnfollowUsername } = request.body;
-  let removeFollowQuery = `DELETE FROM following_database
+  let removeFollowQuery = `DELETE FROM follows
               WHERE followUsername = '${ownUsername}' AND isFollowedUsername = '${toUnfollowUsername}' `;
   let updateFollowerCount = `UPDATE users
                 SET followersCount = followersCount - 1
@@ -102,7 +102,7 @@ const removeFollow = (request, response) => {
 const getFollowers = (request, response) => {
   const client = utils.initClient();
   const query = ` SELECT isFollowedUsername
-                 FROM following_database
+                 FROM follows
                  WHERE followUsername = '${username}'`;
 
   client.connect();
