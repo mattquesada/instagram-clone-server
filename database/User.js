@@ -101,6 +101,7 @@ const removeFollow = (request, response) => {
 
 const getFollowers = (request, response) => {
   const client = utils.initClient();
+  const username = request.body.username;
   const query = ` SELECT isFollowedUsername
                  FROM follows
                  WHERE followUsername = '${username}'`;
