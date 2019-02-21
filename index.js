@@ -9,7 +9,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get('/', (request, response) => {
-  response.json({info: 'Node.js, Express, Postgres API'});
+  response.json({ info: 'Node.js, Express, Postgres API' });
 });
 
 app.get('/user', db.getUser);
