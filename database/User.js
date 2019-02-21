@@ -1,18 +1,12 @@
-const { Client } = require('pg');
-
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: true
-});
-
 const utils = require('./Utils');
 
 // TODO - add insertID to the query response
 const addUser = (request, response) => {
+  const client = utils.initClient();
   const { username, email, password } = request.body;
   const query = ` INSERT INTO users (username, email, password)
                  VALUES ('${username}', '${email}', '${password}')`;
-
+  
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
@@ -22,6 +16,7 @@ const addUser = (request, response) => {
 };
 
 const getUser = (request, response) => {
+  const client = utils.initClient();
   const username = request.body.username;
   const query = ` SELECT *
                  FROM users U
@@ -36,6 +31,7 @@ const getUser = (request, response) => {
 };
 
 const getAllUsers = (request, response) => {
+  const client = utils.initClient();
   const query = `SELECT * FROM users`;
 
   client.connect();
@@ -47,6 +43,7 @@ const getAllUsers = (request, response) => {
 };
 
 const updateBiography = (request, response) => {
+  const client = utils.initClient();
   const { biography, username } = request.body;
   const query = ` UPDATE users
                  SET biography = '${biography}'
@@ -60,6 +57,7 @@ const updateBiography = (request, response) => {
 };
 
 const addFollow = (request, response) => {
+  const client = utils.initClient();
   const { ownUsername, toFollowUsername } = request.body;
   const addFollowQuery = `INSERT INTO following_database
              (followUsername, isFollowedUsername) VALUES
@@ -81,6 +79,7 @@ const addFollow = (request, response) => {
 };
 
 const removeFollow = (request, response) => {
+  const client = utils.initClient();
   const { ownUsername, toUnfollowUsername } = request.body;
   let removeFollowQuery = `DELETE FROM following_database
               WHERE followUsername = '${ownUsername}' AND isFollowedUsername = '${toUnfollowUsername}' `;
@@ -101,6 +100,7 @@ const removeFollow = (request, response) => {
 }
 
 const getFollowers = (request, response) => {
+  const client = utils.initClient();
   const query = ` SELECT isFollowedUsername
                  FROM following_database
                  WHERE followUsername = '${username}'`;
