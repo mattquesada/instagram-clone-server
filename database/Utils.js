@@ -8,6 +8,7 @@ const initClient = () => {
 };
 
 const sendGenericQuery = query => {
+  const client = initClient();
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
