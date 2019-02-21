@@ -47,6 +47,7 @@ const getAllUsers = (request, response) => {
 };
 
 const updateBiography = (request, response) => {
+  const { biography, username } = request.body;
   const query = ` UPDATE users
                  SET biography = '${biography}'
                  WHERE username = '${username}'`;
