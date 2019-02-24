@@ -8,6 +8,8 @@ const getSignedData = (request, response) => {
   const s3 = new aws.S3();
   const fileName = request.query['file-name'];
   const fileType= request.query['file-type'];
+  console.log(fileName);
+  console.log(fileType);
   const s3Params = {
     Bucket: S3_BUCKET,
     Key: fileName,
