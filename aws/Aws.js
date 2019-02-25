@@ -35,15 +35,8 @@ const uploadImage = (request, response) => {
       let responseObject = { errors: [{title: 'Image Upload Error', detail: err.message}] };
       return response.status(422).send(responseObject);
     }
-    let imageUrl = request.file.location;
-
     return response.json({imageUrl: request.file.location});
   }) 
 };
 
-// query postgres to get the image's storage url in S3
-const getImageUrl = (request, response) => {
-  // TODO  
-}
-
-module.exports = { uploadImage, getImageUrl };
+module.exports = { uploadImage };

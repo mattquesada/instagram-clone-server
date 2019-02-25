@@ -45,7 +45,7 @@ const getAllUsers = (request, response) => {
 const updateBiography = (request, response) => {
   const client = utils.initClient();
   const { biography, username } = request.body;
-  const query = ` UPDATE users
+  const query = `UPDATE users
                  SET biography = '${biography}'
                  WHERE username = '${username}'`;
   client.connect();

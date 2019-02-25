@@ -3,8 +3,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
 
-const db = require('./database/User');
 const middleware = require('./middleware');
+const userQueries= require('./database/User');
+const imageQueries = require('./database/Image');
 const awsUtils = require('./aws/Aws');
 
 app.use(bodyParser.json());
@@ -14,18 +15,23 @@ app.get('/', middleware.validateKey, (request, response) => {
   response.json({ info: 'Node.js, Express, Postgres API' });
 });
 
-// endpoints for postgres
-app.get('/user', middleware.validateKey, db.getUser);
-app.post('/user', middleware.validateKey, db.addUser);
-app.get('/allUsers', middleware.validateKey, db.getAllUsers);
-app.post('/biography', middleware.validateKey, db.updateBiography);
-app.post('/addFollow', middleware.validateKey, db.addFollow);
-app.post('/removeFollow', middleware.validateKey, db.removeFollow);
-app.get('/followers', middleware.validateKey, db.getFollowers);
+// POSTGRES ENDPOINTS
+//
+// user queries
+app.get('/user', middleware.validateKey, userQueries.getUser);
+app.post('/user', middleware.validateKey, userQueries.addUser);
+app.get('/allUsers', middleware.validateKey, userQueries.getAllUsers);
+app.post('/biography', middleware.validateKey, userQueries.updateBiography);
+app.post('/addFollow', middleware.validateKey, userQueries.addFollow);
+app.post('/removeFollow', middleware.validateKey, userQueries.removeFollow);
+app.get('/followers', middleware.validateKey, userQueries.getFollowers);
 
-// endpoints for AWS S3
-app.post('/image', middleware.validateKey, awsUtils.uploadImage);
-app.get('/image', middleware.validateKey, awsUtils.getImageUrl);
+// image queries
+app.post('/image', middleware.validateKey, imageQueries.addImage);
+app.post('/caption', middleWare.validateKey, imageQueries.updateCaption);
+
+// AWS S3 ENDPOINT
+app.post('/imageAWS', middleware.validateKey, awsUtils.uploadImage);
 
 app.listen(port, () => {
   console.log(`Server running at port ${port}`);
