@@ -18,9 +18,10 @@ const addUser = (request, response) => {
 const getUser = (request, response) => {
   const client = utils.initClient();
   const username = request.body.username;
-  const query = ` SELECT *
-                 FROM users U
-                 WHERE U.username = '${username}'`;
+  console.log(username);
+  const query = `SELECT *
+                 FROM users 
+                 WHERE username = '${username}'`;
 
   client.connect();
   client.query(query, (error, results) => {
