@@ -1,5 +1,9 @@
 // handlers for uploading images to Aws
 const aws = require('aws-sdk');
+const multer = require('multer');
+const multerS3 = require('multer-s3');
+const crypto = require('crypto');
+const mime = require('mime');
 const S3_BUCKET = process.env.S3_BUCKET;
 
 aws.config.update({
@@ -7,33 +11,39 @@ aws.config.update({
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   region: 'us-west-2'
 })
+const s3 = new aws.S3();
 
-const getSignedData = (request, response) => {
-  const s3 = new aws.S3();
-  const fileName = request.query['file-name'];
-  const fileType= request.query['file-type'];
-  const s3Params = {
-    Bucket: S3_BUCKET,
-    Key: fileName,
-    Expires: 60,
-    ContentType: fileType,
-    ACL: 'public-read'
-  }
-
-  s3.getSignedUrl('putObject', s3Params, (err, data) => {
-    if(err) {
-      console.log(err);
-      return response.end();
+const uploadConfig = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: S3_BUCKET,
+    acl: 'public-read',
+    key: (request, file, callback) => {
+      crypto.pseudoRandomBytes(16, (err, raw) => {
+        callback(null, raw.toString('hex') + Date.now() + '.' + mime.getExtension(file.mimetype));
+      });
     }
+  }),
+  limits: { fieldSize: 25 * 1024 * 1024 }
+});
 
-    const returnData = {
-      signedData: data,
-      url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
-    };
+const uploadImage = (request, response) => {
+  const singleUpload = uploadConfig.single('image');
+  
+  singleUpload(request, response, (err, some) => {
+    if (err) {
+      let responseObject = { errors: [{title: 'Image Upload Error', detail: err.message}] };
+      return response.status(422).send(responseObject);
+    }
+    let imageUrl = request.file.location;
 
-    response.write(JSON.stringify(returnData));
-    response.end();
-  });
+    return response.json({imageUrl: request.file.location});
+  }) 
 };
 
-module.exports = { getSignedData };
+// query postgres to get the image's storage url in S3
+const getImageUrl = (request, response) => {
+  // TODO  
+}
+
+module.exports = { uploadImage, getImageUrl };

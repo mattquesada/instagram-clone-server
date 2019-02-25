@@ -24,7 +24,8 @@ app.post('/removeFollow', middleware.validateKey, db.removeFollow);
 app.get('/followers', middleware.validateKey, db.getFollowers);
 
 // endpoints for AWS S3
-app.get('/sign-s3', middleware.validateKey, awsUtils.getSignedData);
+app.post('/image', middleware.validateKey, awsUtils.uploadImage);
+app.get('/image', middleware.validateKey, awsUtils.getImageUrl);
 
 app.listen(port, () => {
   console.log(`Server running at port ${port}`);
