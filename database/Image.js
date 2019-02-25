@@ -37,7 +37,20 @@ const updateCaption = (request, response) => {
   });
 }
 
+const getAllImages = (request, response) => {
+  const client = utils.initClient();
+  const query = `SELECT * FROM images`;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
 module.exports = {
   addImage,
-  updateCaption
+  updateCaption,
+  getAllImages
 }

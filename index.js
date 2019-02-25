@@ -28,6 +28,7 @@ app.get('/followers', middleware.validateKey, userQueries.getFollowers);
 
 // image queries
 app.post('/image', middleware.validateKey, imageQueries.addImage);
+app.get('/allImages', middleware.validateKey, imageQueries.getAllImages);
 app.post('/caption', middleware.validateKey, imageQueries.updateCaption);
 
 // AWS S3 ENDPOINT
