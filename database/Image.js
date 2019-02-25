@@ -1,6 +1,7 @@
 const utils = require('./Utils');
 
 const addImage = (request, response) => {
+  const client = utils.initClient();
   const { userID, imageURL } = request.body;
   const currentTime = new Date().toLocaleString();
 
@@ -19,6 +20,7 @@ const addImage = (request, response) => {
 }
 
 const updateCaption = (request, response) => {
+  const client = utils.initClient();
   const { imageID, caption } = request.body;
   const query = 
   `
