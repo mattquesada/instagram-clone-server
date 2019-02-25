@@ -17,8 +17,7 @@ const addUser = (request, response) => {
 
 const getUser = (request, response) => {
   const client = utils.initClient();
-  const username = request.body.username;
-  console.log(username);
+  username = request.query['username'];
   const query = `SELECT *
                  FROM users 
                  WHERE username = '${username}'`;
