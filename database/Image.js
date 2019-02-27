@@ -14,7 +14,7 @@ const addImage = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(201).send(`Image added successfully`);
+    response.status(201).send({ status: 'image added successfully' });
     client.end();
   });
 }
@@ -37,6 +37,58 @@ const updateCaption = (request, response) => {
   });
 }
 
+const getImages = (request, response) => {
+  const client = utils.initClient();
+  const userID = request.query['userID'];
+  const query = 
+  `
+    SELECT * 
+    FROM images
+    WHERE UserID = '${userID}'
+  `
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
+// given an array of userIDs, fetch all images owned
+// by every User 
+const getImagesWithMultipleUsers = (request, response) => {
+  const client = utils.initClient();
+  const stringUserIDs = request.query['userIDs'].split(',');
+  const userIDs = stringUserIDs.map(str => parseInt(str)); 
+
+  if (isNaN(userIDs) && !Array.isArray(userIDs)) { // if we have no userIDs, don't query postgres
+    response.status(400).send([]);
+    return;
+  }
+
+  if (Array.isArray(userIDs)) {
+    if (isNaN(userIDs[0])) {
+      response.status(400).send([]);
+      return;
+    }
+  }
+
+  const query =
+  `
+    SELECT *
+    FROM images
+    WHERE UserID IN (${userIDs.join()});
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
 const getAllImages = (request, response) => {
   const client = utils.initClient();
   const query = `SELECT * FROM images`;
@@ -49,8 +101,29 @@ const getAllImages = (request, response) => {
   });
 }
 
+const updateLikes = (request, response) => {
+  const client = utils.initClient();
+  const { imageID } = request.body; 
+  const query = 
+  `
+    UPDATE images
+    SET Likes = Likes + 1
+    WHERE imageID = '${imageID}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(201).send({status: 'Likes count updated successfully'});
+    client.end();
+  });
+}
+
 module.exports = {
   addImage,
   updateCaption,
-  getAllImages
+  getImages,
+  getImagesWithMultipleUsers,
+  getAllImages,
+  updateLikes
 }

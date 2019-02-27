@@ -10,7 +10,7 @@ const addUser = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(201).send(`User added successfully`);
+    response.status(201).send({status: 'user added successfully'});
     client.end();
   });
 };
@@ -25,10 +25,56 @@ const getUser = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(200).send(results.rows);
+    response.status(200).send(results.rows[0]);
     client.end();
   });
 };
+
+const getUserByID = (request, response) => {
+  const client = utils.initClient();
+  userID = request.query['userID'];
+  const query = `SELECT *
+                 FROM users 
+                 WHERE UserID = '${userID}'`;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows[0]);
+    client.end();
+  });
+};
+
+// given an array of ID numbers (any size),
+// return all the corresponding user records 
+const getMultipleUsersByID = (request, response) => {
+  const client = utils.initClient();
+  const stringUserIDs = request.query['userIDs'].split(',');
+  const userIDs = stringUserIDs.map(str => parseInt(str));
+
+  if (isNaN(userIDs) && !Array.isArray(userIDs)) { // if we have no userIDs, don't query postgres
+    response.status(400).send([]);
+    return;
+  }
+
+  if (Array.isArray(userIDs)) {
+    if (isNaN(userIDs[0])) {
+      response.status(400).send([]);
+      return;
+    }
+  }
+
+  const query = `SELECT *
+                FROM users 
+                WHERE UserID IN (${userIDs.join()})`;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
 
 const getAllUsers = (request, response) => {
   const client = utils.initClient();
@@ -42,6 +88,21 @@ const getAllUsers = (request, response) => {
   });
 };
 
+const searchUsers = (request, response) => {
+  const client = utils.initClient();
+  searchText = request.query['searchText'];
+  const query = `SELECT * 
+                 FROM users
+                 WHERE username LIKE '${searchText}%'`; 
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+
+}
+
 const updateBiography = (request, response) => {
   const client = utils.initClient();
   const { biography, username } = request.body;
@@ -51,60 +112,53 @@ const updateBiography = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(201).send(`Biography updated successfully`);
+    response.status(201).send({status: 'biography updated successfully'});
     client.end();
   });
 };
 
 const addFollow = (request, response) => {
   const client = utils.initClient();
-  const { ownUsername, toFollowUsername } = request.body;
-  const addFollowQuery = `INSERT INTO follows
-             (followUsername, isFollowedUsername) VALUES
-             ('${ownUsername}', '${toFollowUsername}')`;
-  const updateFollowerCount = `UPDATE users
-                SET followersCount = followersCount + 1
-                WHERE username = '${toFollowUsername}';`;
-  const updateFollowingCount = `UPDATE users
-                SET followingCount = followingCount + 1
-                WHERE username = '${ownUsername}';`;
-  utils.sendGenericQuery(updateFollowingCount);
-  utils.sendGenericQuery(updateFollowerCount);
+  const { ownUserID, toFollowUserID } = request.body;
+  const query = 
+  `
+    INSERT INTO follows
+    (is_following_id, is_followed_id) 
+    VALUES ('${ownUserID}', '${toFollowUserID}')
+  `;
+
   client.connect();
-  client.query(addFollowQuery, (error, results) => {
+  client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(201).send(`Follower added successfully`);
+    response.status(201).send({status: 'follow added successfully'});
     client.end();
   });
 };
 
 const removeFollow = (request, response) => {
   const client = utils.initClient();
-  const { ownUsername, toUnfollowUsername } = request.body;
-  let removeFollowQuery = `DELETE FROM follows
-              WHERE followUsername = '${ownUsername}' AND isFollowedUsername = '${toUnfollowUsername}' `;
-  let updateFollowerCount = `UPDATE users
-                SET followersCount = followersCount - 1
-                WHERE username = '${toUnfollowUsername}'`;
-  let updateFollowingCount = `UPDATE users
-                SET followingCount = followingCount - 1
-                WHERE username = '${ownUsername}'`;
-  utils.sendGenericQuery(updateFollowingCount);
-  utils.sendGenericQuery(updateFollowerCount);
+  const { ownUserID, toUnfollowUserID } = request.body;
+  let query = 
+  `
+    DELETE FROM follows
+    WHERE is_following_id = '${ownUserID}' 
+      AND is_followed_id = '${toUnfollowUserID}' 
+  `;
+
   client.connect();
-  client.query(removeFollowQuery, (error, results) => {
+  client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(201).send(`Follower removed successfully`);
+    response.status(201).send({status: 'follow removed successfully'});
     client.end();
   });
 }
 
-const getFollowers = (request, response) => {
+const getFollowing = (request, response) => {
   const client = utils.initClient();
-  const username = request.query['username'];
-  const query = ` SELECT isFollowedUsername
+  const userID = request.query['userID'];
+  const query = ` SELECT is_followed_id
                   FROM follows
-                  WHERE followUsername = '${username}'`;
+                  WHERE is_following_id = '${userID}'`;
 
   client.connect();
   client.query(query, (error, results) => {
@@ -114,12 +168,28 @@ const getFollowers = (request, response) => {
   });
 }
 
+const getAllFollows = (request, response) => {
+  const client = utils.initClient();
+  const query = `SELECT * FROM follows`;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+};
+
 module.exports = {
   addUser,
   getUser,
+  getUserByID,
+  getMultipleUsersByID,
   getAllUsers,
   updateBiography,
   addFollow,
   removeFollow,
-  getFollowers
+  getFollowing,
+  searchUsers,
+  getAllFollows
 };
