@@ -13,11 +13,11 @@ const addUser = (request, response) => {
     response.status(201).send({status: 'user added successfully'});
     client.end();
   });
-};
+}
 
 const getUser = (request, response) => {
   const client = utils.initClient();
-  username = request.query['username'];
+  const username = request.query['username'];
   const query = `SELECT *
                  FROM users 
                  WHERE username = '${username}'`;
@@ -28,11 +28,11 @@ const getUser = (request, response) => {
     response.status(200).send(results.rows[0]);
     client.end();
   });
-};
+}
 
 const getUserByID = (request, response) => {
   const client = utils.initClient();
-  userID = request.query['userID'];
+  const userID = request.query['userID'];
   const query = `SELECT *
                  FROM users 
                  WHERE UserID = '${userID}'`;
@@ -43,7 +43,7 @@ const getUserByID = (request, response) => {
     response.status(200).send(results.rows[0]);
     client.end();
   });
-};
+}
 
 // given an array of ID numbers (any size),
 // return all the corresponding user records 
@@ -86,11 +86,11 @@ const getAllUsers = (request, response) => {
     response.status(200).send(results.rows);
     client.end();
   });
-};
+}
 
 const searchUsers = (request, response) => {
   const client = utils.initClient();
-  searchText = request.query['searchText'];
+  const searchText = request.query['searchText'];
   const query = `SELECT * 
                  FROM users
                  WHERE username LIKE '${searchText}%'`; 
@@ -100,7 +100,6 @@ const searchUsers = (request, response) => {
     response.status(200).send(results.rows);
     client.end();
   });
-
 }
 
 const updateBiography = (request, response) => {
@@ -115,7 +114,7 @@ const updateBiography = (request, response) => {
     response.status(201).send({status: 'biography updated successfully'});
     client.end();
   });
-};
+}
 
 const addFollow = (request, response) => {
   const client = utils.initClient();
@@ -133,7 +132,7 @@ const addFollow = (request, response) => {
     response.status(201).send({status: 'follow added successfully'});
     client.end();
   });
-};
+}
 
 const removeFollow = (request, response) => {
   const client = utils.initClient();
@@ -178,7 +177,26 @@ const getAllFollows = (request, response) => {
     response.status(200).send(results.rows);
     client.end();
   });
-};
+}
+
+// count the number of users following the current user
+const countFollowers = (request, response) => {
+  const client = utils.initClient();
+  const userID = request.query['userID'];
+  const query = 
+  `
+    SELECT COUNT(*) 
+    FROM follows 
+    WHERE is_followed_id = '${userID}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows[0]);
+    client.end();
+  });
+}
 
 module.exports = {
   addUser,
@@ -191,5 +209,6 @@ module.exports = {
   removeFollow,
   getFollowing,
   searchUsers,
-  getAllFollows
+  getAllFollows,
+  countFollowers
 };

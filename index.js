@@ -30,6 +30,7 @@ app.post('/removeFollow', middleware.validateKey, userQueries.removeFollow);
 app.get('/following', middleware.validateKey, userQueries.getFollowing);
 app.get('/allFollows', middleware.validateKey, userQueries.getAllFollows);
 app.get('/searchUsers', middleware.validateKey, userQueries.searchUsers);
+app.get('/countFollowers', middleware.validateKey, userQueries.countFollowers);
 
 // image queries
 app.post('/image', middleware.validateKey, imageQueries.addImage);
@@ -38,6 +39,7 @@ app.get('/imagesByIDs', middleware.validateKey, imageQueries.getImagesWithMultip
 app.get('/allImages', middleware.validateKey, imageQueries.getAllImages);
 app.post('/caption', middleware.validateKey, imageQueries.updateCaption);
 app.post('/likes', middleware.validateKey, imageQueries.updateLikes);
+app.get('/countLikes', middleware.validateKey, imageQueries.countLikes);
 
 // AWS S3 ENDPOINT
 app.post('/uploadImage', middleware.validateKey, awsUtils.uploadImage);

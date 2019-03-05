@@ -119,11 +119,30 @@ const updateLikes = (request, response) => {
   });
 }
 
+const countLikes = (request, response) => {
+  const client = utils.initClient();
+  const userID = request.query['userID'];
+  const query =
+    `
+    SELECT SUM(likes)
+    FROM images
+    WHERE userID = '${userID}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows[0]);
+    client.end();
+  });
+}
+
 module.exports = {
   addImage,
   updateCaption,
   getImages,
   getImagesWithMultipleUsers,
   getAllImages,
-  updateLikes
+  updateLikes,
+  countLikes
 }
