@@ -40,6 +40,9 @@ app.get('/allImages', middleware.validateKey, imageQueries.getAllImages);
 app.post('/caption', middleware.validateKey, imageQueries.updateCaption);
 app.post('/likes', middleware.validateKey, imageQueries.updateLikes);
 app.get('/countLikes', middleware.validateKey, imageQueries.countLikes);
+app.post('/comment', middleware.validateKey, imageQueries.addComment);
+app.get('/allComments', middleware.validateKey, imageQueries.getAllComments);
+app.get('/imageComments', middleware.validateKey, imageQueries.getCommentsByImageID);
 
 // AWS S3 ENDPOINT
 app.post('/uploadImage', middleware.validateKey, awsUtils.uploadImage);

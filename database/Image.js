@@ -137,6 +137,58 @@ const countLikes = (request, response) => {
   });
 }
 
+const addComment = (request, response) => {
+  const client = utils.initClient();
+  const { imageID, userID, commentText } = request.body;
+  const query = 
+  `
+    INSERT INTO comments (comment_text, image_id, user_id)
+    VALUES ('${commentText}', '${imageID}', '${userID}')
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(201).send({status: 'Comment added successfully'});
+    client.end();
+  });
+}
+
+const getAllComments = (request, response) => {
+  const client = utils.initClient();
+  const query = `SELECT * FROM comments`;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
+const getCommentsByImageID = (request, response) => {
+  const client = utils.initClient();
+  const imageID = request.query['imageID'];
+  const query = 
+  `
+    SELECT comment_text 
+    FROM comments
+    WHERE image_id = '${imageID}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+
+    let comments = [];
+    for (let comment of results.rows)
+      comments.push(comment.comment_text);
+
+    response.status(200).send(comments);
+    client.end();
+  });
+}
+
 module.exports = {
   addImage,
   updateCaption,
@@ -144,5 +196,8 @@ module.exports = {
   getImagesWithMultipleUsers,
   getAllImages,
   updateLikes,
-  countLikes
+  countLikes,
+  addComment,
+  getAllComments,
+  getCommentsByImageID
 }
