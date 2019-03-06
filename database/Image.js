@@ -171,9 +171,11 @@ const getCommentsByImageID = (request, response) => {
   const imageID = request.query['imageID'];
   const query = 
   `
-    SELECT comment_text, user_id 
-    FROM comments
-    WHERE image_id = '${imageID}'
+    SELECT c.comment_text, u.username 
+    FROM comments c
+    INNER JOIN users u
+    ON c.user_id = u.UserID
+    WHERE c.image_id = '${imageID}'
   `;
 
   client.connect();
