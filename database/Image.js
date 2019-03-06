@@ -171,7 +171,7 @@ const getCommentsByImageID = (request, response) => {
   const imageID = request.query['imageID'];
   const query = 
   `
-    SELECT comment_text 
+    SELECT comment_text, user_id 
     FROM comments
     WHERE image_id = '${imageID}'
   `;
@@ -179,12 +179,7 @@ const getCommentsByImageID = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-
-    let comments = [];
-    for (let comment of results.rows)
-      comments.push(comment.comment_text);
-
-    response.status(200).send(comments);
+    response.status(200).send(results.rows);
     client.end();
   });
 }
