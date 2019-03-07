@@ -21,18 +21,48 @@ const addImage = (request, response) => {
 
 const updateCaption = (request, response) => {
   const client = utils.initClient();
-  const { imageID, caption } = request.body;
-  const query = 
+  const { caption, imageID } = request.body;
+
+  // parse the caption to extract the hashtags
+  let words = caption.split(' ');
+  let hashtags = [];
+  let captionWords = [];
+  for (word of words) {
+    if (word.charAt(0) === '#') {
+      let hashtag = word.slice(1);
+      hashtags.push(hashtag);
+    }
+    else {
+      captionWords.push(word);
+    }
+  }
+  let parsedCaption = captionWords.join(' ');
+
+  let addCaptionQuery = 
   `
-    UPDATE images 
-    SET Caption = '${caption}'
-    WHERE ImageID = '${imageID}'
+    UPDATE images
+    SET caption = ${parsedCaption}
+    WHERE imageid = '${imageID}'
   `;
 
+  // start of the query string -> we need to build this out to 
+  // add a variable amount of hashtags in one query
+  let addHashtagsBaseQuery = 'INSERT INTO hashtags (hashtag_text, image_id) VALUES '; 
+  for (hashtag of hashtags) 
+    addHashtagsQuery += `('${hashtag}', '${imageID}'), `;
+
+  // trim the end of the query string
+  let addHashtagsQuery = addHashtagsBaseQuery.substring(0, addHashtagsBaseQuery.length - 2);
+
+  // execute the SQL queries
   client.connect();
-  client.query(query, (error, results) => {
+  client.query(addCaptionQuery, (error, results) => {
     if (error) throw error;
-    response.status(201).send(`Caption updated successfully`);
+  });
+
+  client.query(addHashtagsQuery, (error, results) => {
+    if (error) throw error;
+    response.status(201).send({status: 'caption and hashtags updated successfully'});
     client.end();
   });
 }
@@ -199,5 +229,5 @@ module.exports = {
   countLikes,
   addComment,
   getAllComments,
-  getCommentsByImageID
+  getCommentsByImageID,
 }
