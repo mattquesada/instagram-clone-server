@@ -41,7 +41,7 @@ const updateCaption = (request, response) => {
   let addCaptionQuery = 
   `
     UPDATE images
-    SET caption = ${parsedCaption}
+    SET caption = '${parsedCaption}'
     WHERE imageid = '${imageID}'
   `;
 
@@ -49,7 +49,7 @@ const updateCaption = (request, response) => {
   // add a variable amount of hashtags in one query
   let addHashtagsBaseQuery = 'INSERT INTO hashtags (hashtag_text, image_id) VALUES '; 
   for (hashtag of hashtags) 
-    addHashtagsQuery += `('${hashtag}', '${imageID}'), `;
+    addHashtagsBaseQuery += `('${hashtag}', '${imageID}'), `;
 
   // trim the end of the query string
   let addHashtagsQuery = addHashtagsBaseQuery.substring(0, addHashtagsBaseQuery.length - 2);
@@ -216,6 +216,18 @@ const getCommentsByImageID = (request, response) => {
   });
 }
 
+const getAllHashtags = (request, response) => {
+  const client = utils.initClient();
+  const query = `SELECT * FROM hashtags`;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
 module.exports = {
   addImage,
   updateCaption,
@@ -227,4 +239,5 @@ module.exports = {
   addComment,
   getAllComments,
   getCommentsByImageID,
+  getAllHashtags
 }
