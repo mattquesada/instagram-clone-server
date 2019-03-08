@@ -216,6 +216,26 @@ const getCommentsByImageID = (request, response) => {
   });
 }
 
+// get hashtags for a given image
+const getHashtags = (request, response) => {
+  const client = utils.initClient();
+  const imageID = request.query['imageID'];
+  const query = 
+  `
+    SELECT hashtag_text 
+    FROM hashtags
+    WHERE image_id = '${imageID}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    let trimmedResults = results.rows.map(row => row.hashtag_text);
+    response.status(200).send(trimmedResults);
+    client.end();
+  });
+}
+
 const getAllHashtags = (request, response) => {
   const client = utils.initClient();
   const query = `SELECT * FROM hashtags`;
@@ -223,7 +243,7 @@ const getAllHashtags = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(200).send(results.rows);
+    response.status(200).send(trimmedResults);
     client.end();
   });
 }
@@ -239,5 +259,6 @@ module.exports = {
   addComment,
   getAllComments,
   getCommentsByImageID,
+  getHashtags,
   getAllHashtags
 }

@@ -43,6 +43,7 @@ app.get('/countLikes', middleware.validateKey, imageQueries.countLikes);
 app.post('/comment', middleware.validateKey, imageQueries.addComment);
 app.get('/allComments', middleware.validateKey, imageQueries.getAllComments);
 app.get('/imageComments', middleware.validateKey, imageQueries.getCommentsByImageID);
+app.get('/hashtags', middleware.validateKey, imageQueries.getHashtags);
 app.get('/allHashtags', middleware.validateKey, imageQueries.getAllHashtags);
 
 // AWS S3 ENDPOINT
