@@ -270,6 +270,26 @@ const searchHashtags = (request, response) => {
   });
 }
 
+const getImagesByHashtags = (request, response) => {
+  const client = utils.initClient();
+  const hashtag = request.query['hashtag'];
+  let query = 
+  `
+    SELECT i.imageurl, i.caption, i.likes AS numLikes, u.username AS poster
+    FROM images i
+    INNER JOIN hashtags h ON i.imageid = h.image_id
+    INNER JOIN users u ON i.userid = u.userid
+    WHERE h.hashtag_text = '${hashtag}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
 module.exports = {
   addImage,
   updateCaption,
@@ -283,5 +303,6 @@ module.exports = {
   getCommentsByImageID,
   getHashtags,
   getAllHashtags,
-  searchHashtags
+  searchHashtags,
+  getImagesByHashtags
 }
