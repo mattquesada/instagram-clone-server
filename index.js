@@ -45,6 +45,7 @@ app.get('/allComments', middleware.validateKey, imageQueries.getAllComments);
 app.get('/imageComments', middleware.validateKey, imageQueries.getCommentsByImageID);
 app.get('/hashtags', middleware.validateKey, imageQueries.getHashtags);
 app.get('/allHashtags', middleware.validateKey, imageQueries.getAllHashtags);
+app.get('/searchHashtags', middleware.validateKey, imageQueries.searchHashtags);
 
 // AWS S3 ENDPOINT
 app.post('/uploadImage', middleware.validateKey, awsUtils.uploadImage);

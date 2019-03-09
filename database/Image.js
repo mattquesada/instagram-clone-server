@@ -243,7 +243,29 @@ const getAllHashtags = (request, response) => {
   client.connect();
   client.query(query, (error, results) => {
     if (error) throw error;
-    response.status(200).send(trimmedResults);
+    response.status(200).send(results.rows);
+    client.end();
+  });
+}
+
+const searchHashtags = (request, response) => {
+  const client = utils.initClient();
+  const hashtagText = request.query['hashtagText'];
+  let query = 
+  `
+    SELECT COUNT(hashtag_text), hashtag_text
+    FROM (
+        SELECT *
+        FROM hashtags h
+        WHERE h.hashtag_text LIKE '${hashtagText}%'
+    ) AS derived_table
+    GROUP BY hashtag_text
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send(results.rows);
     client.end();
   });
 }
@@ -260,5 +282,6 @@ module.exports = {
   getAllComments,
   getCommentsByImageID,
   getHashtags,
-  getAllHashtags
+  getAllHashtags,
+  searchHashtags
 }
