@@ -198,6 +198,25 @@ const countFollowers = (request, response) => {
   });
 }
 
+// update the user's profile image
+const updateProfileImage = (request, response) => {
+  const client = utils.initClient();
+  const { userID, imageURL } = request.body;
+  const query =
+  `
+    UPDATE users
+    SET profileimageurl = '${imageURL}'
+    WHERE userid = '${userID}'
+  `;
+
+  client.connect();
+  client.query(query, (error, results) => {
+    if (error) throw error;
+    response.status(200).send({status: 'profile image updated successfully'});
+    client.end();
+  });
+}
+
 module.exports = {
   addUser,
   getUser,
@@ -210,5 +229,6 @@ module.exports = {
   getFollowing,
   searchUsers,
   getAllFollows,
-  countFollowers
+  countFollowers,
+  updateProfileImage
 };
