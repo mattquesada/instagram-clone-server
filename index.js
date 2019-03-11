@@ -31,7 +31,7 @@ app.get('/following', middleware.validateKey, userQueries.getFollowing);
 app.get('/allFollows', middleware.validateKey, userQueries.getAllFollows);
 app.get('/searchUsers', middleware.validateKey, userQueries.searchUsers);
 app.get('/countFollowers', middleware.validateKey, userQueries.countFollowers);
-app.get('/profileImage', middleware.validateKey, userQueries.updateProfileImage);
+app.post('/profileImage', middleware.validateKey, userQueries.updateProfileImage);
 
 // image queries
 app.post('/image', middleware.validateKey, imageQueries.addImage);
