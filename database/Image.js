@@ -275,7 +275,9 @@ const getImagesByHashtags = (request, response) => {
   const hashtag = request.query['hashtag'];
   let query = 
   `
-    SELECT i.imageurl, i.imageid, i.caption, i.likes AS numLikes, u.username AS poster
+    SELECT i.imageurl, i.imageid, i.caption, 
+      i.likes AS numLikes, u.username AS poster, 
+      u.profileimageurl AS profileImage
     FROM images i
     INNER JOIN hashtags h ON i.imageid = h.image_id
     INNER JOIN users u ON i.userid = u.userid
